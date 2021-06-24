@@ -67,4 +67,72 @@ router.get("/mine", validateJWT, async (req, res) => {
     }
 })
 
+// ==================================
+//     Get entries by description
+// ==================================
+
+router.get("/:description", async (req, res) => {
+    const { description } = req.params
+    try {
+        const results = await LogModel.findAll({
+            where: { description: description }
+        })
+        res.status(200).json(results)
+    } catch (err) {
+        res.status(500).json({ error: err })
+    }
+})
+
+// ==================================
+//     Update a workout log
+// ==================================
+router.put("/update/:entryId", validateJWT, async (req, res) => {
+    const { description, definition, result } = req.body.userWorkoutlogs
+    const workoutLogID = req.params.entryId
+    const userId = req.user.id
+
+    const query = {
+        where: {
+            id: workoutLogID,
+            owner: userId
+        }
+    }
+
+    const updatedWorkoutLogId = {
+        description: description,
+        definition: definition,
+        result: result
+    }
+
+    try {
+        const update = await LogModel.update(updatedWorkoutLogId, query)
+        res.status(200).json(update)
+    } catch (err) {
+        res.status(500).json({ error: err })
+    }
+})
+
+// ==================================
+//     Delete a workout log
+// ==================================
+
+router.delete("/delete/:id", validateJWT, async (req, res) => {
+    const ownerId = req.user.id
+    const workoutLogID = req.params.id
+
+    try {
+        const query = {
+            where: {
+                id: workoutLogID,
+                owner: ownerId
+            }
+        }
+
+        await LogModel.destroy(query)
+        res.status(200).json({ message: "Workout Log Entry Removed"})
+    } catch (err) {
+        res.status(500).json({ error: err })
+    }
+})
+
 module.exports = router
