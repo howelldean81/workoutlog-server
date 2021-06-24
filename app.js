@@ -7,7 +7,7 @@ const controllers = require("./controllers")
 
 app.use(Express.json())
 
-app.use(require("./middleware/validate-jwt"))
+// app.use(require("./middleware/validate-jwt"))
 app.use("/workoutlog", controllers.workoutLogController)
 app.use("/user", controllers.usercontroller)
 
